@@ -1,0 +1,26 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
+        title Natours | #{title}
+
+        link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Lato:300,300i,700")
+        link(rel="stylesheet", href="/css/style.css")
+        link(rel="shortcut icon", type='/image/png' href="img/favicon.png")
+
+        block scripts
+    body 
+        // HEADER
+        include ./includes/_header
+
+        // CONTENT
+        block content 
+            p default content
+        
+        // FOOTER
+        include ./includes/_footer
+
+        script(src="/js/bundle/index.js") 

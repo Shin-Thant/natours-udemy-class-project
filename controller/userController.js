@@ -1,5 +1,6 @@
 const AppError = require("../config/AppError");
 const User = require("../model/User");
+const setCookie = require("../utils/cookiesHandler");
 const createToken = require("../utils/createToken");
 const filterObject = require("../utils/filterObject");
 const factory = require("./handlerFactory");
@@ -33,9 +34,9 @@ const getAllUsers = factory.getAll(User);
 // };
 
 const updatePassword = async (req, res) => {
-	const { passwordCurrent, password } = req.body;
+	const { passwordCurrent, password, passwordConfirm } = req.body;
 
-	if (!passwordCurrent || !password) {
+	if (!passwordCurrent || !password || !passwordConfirm) {
 		throw new AppError("All fields are required!", 400);
 	}
 
@@ -52,14 +53,18 @@ const updatePassword = async (req, res) => {
 	}
 
 	foundUser.password = password;
-	foundUser.passwordConfirm = password;
+	foundUser.passwordConfirm = passwordConfirm;
 	await foundUser.save();
 
 	const token = await createToken(res, foundUser._id);
 
+	// set cookie
+	setCookie(res, token);
+
 	res.json({
 		status: "success",
 		token,
+		user: foundUser,
 	});
 };
 
@@ -73,7 +78,7 @@ const updateUser = async (req, res) => {
 		{ new: true, runValidators: true }
 	);
 
-	res.json({ status: "true", user: updatedUser });
+	res.json({ status: "success", user: updatedUser });
 };
 
 const deleteUser = async (req, res) => {

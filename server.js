@@ -18,7 +18,6 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 const cookieParser = require("cookie-parser");
 // const cors = require('cors');
-const AppError = require("./config/AppError");
 const globalErrorHandler = require("./middleware/globalErrorHandler");
 const connectDB = require("./config/connectDB");
 const PORT = process.env.PORT || 3500;
@@ -50,8 +49,8 @@ const limiter = rateLimit({
 app.use("/api", limiter);
 
 // Body parser, reading data from body into req.body
-app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
@@ -75,10 +74,10 @@ app.use(
 );
 
 // Test middleware
-app.use((req, res, next) => {
-	console.log({ url: req.url, originalUrl: req.originalUrl });
-	next();
-});
+// app.use((req, res, next) => {
+// 	console.log({ originalUrl: req.originalUrl });
+// 	next();
+// });
 
 // 3) ROUTES
 app.use("/", require("./routes/viewRoutes.js"));
@@ -87,8 +86,19 @@ app.use("/api/v1/users", require("./routes/userRoutes"));
 app.use("/api/v1/tours", require("./routes/tourRoutes"));
 app.use("/api/v1/reviews", require("./routes/reviewRoutes"));
 
+// eslint-disable-next-line no-unused-vars
 app.all("*", (req, res, next) => {
-	next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+	res.status(404);
+
+	if (req.accepts("html")) {
+		return res
+			.status(404)
+			.render("error", { title: "404", msg: "404 | Page Not Found!" });
+	} else if (req.accepts("json")) {
+		return res.json({ message: "404 Not Found!" });
+	}
+
+	res.type("txt").send("404 Not Found!");
 });
 
 // * global error handler

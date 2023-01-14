@@ -17,6 +17,13 @@ module.exports = async (req, res, next) => {
 	}
 
 	if (!token) {
+		if (!req.originalUrl.startsWith("/api")) {
+			return res.status(401).render("error", {
+				title: "Unauthorized!",
+				msg: "Something went wrong!",
+			});
+		}
+
 		return res
 			.status(401)
 			.json({ status: "fail", message: "Unauthorized!" });
@@ -39,7 +46,13 @@ module.exports = async (req, res, next) => {
 		return res.status(401).json({ message: "Please login again!" });
 	}
 
+	// *add user doc to request
 	req.user = foundUser;
+
+	// *add user doc to template
+	if (!req.originalUrl.startsWith("/api")) {
+		res.locals.user = foundUser;
+	}
 
 	next();
 };

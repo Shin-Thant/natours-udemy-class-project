@@ -109,7 +109,7 @@ userSchema.pre("save", async function (next) {
 		return next();
 	}
 
-	console.log("===== hashing password =====");
+	// console.log("===== hashing password =====");
 	this.password = await bcrypt.hash(this.password, 10);
 	this.passwordConfirm = "";
 

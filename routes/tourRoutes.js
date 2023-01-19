@@ -9,10 +9,17 @@ const {
 	getDistance,
 } = require("../controller/tourController");
 const aliasTopTours = require("../middleware/aliasTopTours");
+const resizeTourImages = require("../middleware/resizeTourImages");
+const upload = require("../middleware/uploadFile");
 const verifyJWT = require("../middleware/verifyJWT");
 const verifyRole = require("../middleware/verifyRole");
 const router = express.Router();
 const reviewRouter = require("./reviewRoutes");
+
+const uploadTourImages = upload.fields([
+	{ name: "imageCover", maxCount: 1 },
+	{ name: "images", maxCount: 3 },
+]);
 
 router.route("/top-5-cheap").get(aliasTopTours, getAllTours);
 
@@ -24,7 +31,13 @@ router
 router
 	.route("/:id")
 	.get(getTourById)
-	.patch(verifyJWT, verifyRole("admin", "lead-guide"), updateTour)
+	.patch(
+		verifyJWT,
+		verifyRole("admin", "lead-guide"),
+		uploadTourImages,
+		resizeTourImages,
+		updateTour
+	)
 	.delete(verifyJWT, verifyRole("admin", "lead-guide"), deleteTour);
 
 // *nested routes

@@ -38,6 +38,8 @@ module.exports = (err, req, res, next) => {
 			-1
 		)}. Please use another one!`;
 
+		console.log("11000", errMessage);
+
 		return sendError(AppError(errMessage, 400), res);
 	}
 

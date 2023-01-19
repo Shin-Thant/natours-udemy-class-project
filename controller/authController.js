@@ -6,15 +6,8 @@ const createToken = require("../utils/createToken");
 const setCookie = require("../utils/cookiesHandler");
 
 const register = async (req, res) => {
-	const {
-		name,
-		email,
-		photo,
-		role,
-		password,
-		passwordConfirm,
-		passwordChangedAt,
-	} = req.body;
+	const { name, email, role, password, passwordConfirm, passwordChangedAt } =
+		req.body;
 
 	if (!name || !email || !password || !passwordConfirm) {
 		throw new AppError("All fields are required!", 400);
@@ -23,7 +16,6 @@ const register = async (req, res) => {
 	const newUser = await User.create({
 		name,
 		email,
-		photo,
 		role,
 		password,
 		passwordConfirm,

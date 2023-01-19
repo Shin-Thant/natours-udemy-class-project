@@ -71,6 +71,11 @@ const updatePassword = async (req, res) => {
 const updateUser = async (req, res) => {
 	const filteredBody = filterObject(req.body, "name", "email");
 
+	// set profile photo
+	if (req.file) {
+		filteredBody.photo = req.file.filename;
+	}
+
 	// *use "$set" operator to enable update validator
 	const updatedUser = await User.findByIdAndUpdate(
 		req.user._id,

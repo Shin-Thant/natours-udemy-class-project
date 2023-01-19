@@ -2,7 +2,7 @@ const util = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("../model/User");
 
-module.exports = async (req, res, next) => {
+const verifyJWT = async (req, res, next) => {
 	// *access 'bearer' token with `req.headers.`(object format) or `req.header('...')`(function format)
 
 	const bearerTokenString =
@@ -56,3 +56,5 @@ module.exports = async (req, res, next) => {
 
 	next();
 };
+
+module.exports = verifyJWT;

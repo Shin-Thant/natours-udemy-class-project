@@ -10,16 +10,20 @@ const {
 	updateUserByAdmin,
 } = require("../controller/userController");
 const getMe = require("../middleware/getMe");
+const resizeProfileImage = require("../middleware/resizeProfileImage");
+const upload = require("../middleware/uploadFile");
 const verifyJWT = require("../middleware/verifyJWT");
 const verifyRole = require("../middleware/verifyRole");
 const router = express.Router();
+
+const uploadUserProfileImage = upload.single("profileImage");
 
 router.use(verifyJWT);
 
 router
 	.route("/")
 	.get(verifyRole("admin"), getAllUsers)
-	.patch(updateUser)
+	.patch(uploadUserProfileImage, resizeProfileImage, updateUser)
 	.delete(deleteUser);
 
 router.get("/me", getMe, getUserById);

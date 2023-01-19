@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { showAlert } from "./alert";
 import { login, logout } from "./auth";
-import { updateSettings, updatePassword } from "./updateUserData";
+import { updateUserInfo, updateUserPassword } from "./updateUserData";
 
 const loginForm = document.querySelector(".form.form--login");
 const loginEmailInput = document.getElementById("email");
@@ -16,6 +16,9 @@ const userNameSettingInput = document.querySelector(
 const userEmailSettingInput = document.querySelector(
 	".form__input--email-setting"
 );
+const userImageSettingInput = document.querySelector(
+	".form__input--profileImg-setting"
+);
 
 const pwdUpdateForm = document.querySelector(".form-user-password");
 const currentPwdUpdateInput = document.querySelector(".pwd-update--current");
@@ -23,7 +26,7 @@ const newPwdUpdateInput = document.querySelector(".pwd-update--new");
 const newPwdConfirmUpdateInput = document.querySelector(
 	".pwd-update--new-confirm"
 );
-const pwdFormSubmitBtn = document.querySelector('.btn--save-password');
+const pwdFormSubmitBtn = document.querySelector(".btn--save-password");
 
 function checkPasswordsMatched(pwd, confirmPwd) {
 	if (pwd.length !== confirmPwd.length) {
@@ -56,10 +59,17 @@ if (settingForm) {
 	settingForm.addEventListener("submit", (e) => {
 		e.preventDefault();
 
+		const formData = new FormData();
+
 		const name = userNameSettingInput.value;
 		const email = userEmailSettingInput.value;
+		const image = userImageSettingInput.files;
 
-		updateSettings(name, email);
+		formData.append("name", name);
+		formData.append("email", email);
+		formData.append("profileImage", image[0]);
+
+		updateUserInfo(formData);
 	});
 }
 
@@ -67,7 +77,7 @@ if (pwdUpdateForm) {
 	pwdUpdateForm.addEventListener("submit", (e) => {
 		e.preventDefault();
 
-		pwdFormSubmitBtn.textContent = 'Updating...'
+		pwdFormSubmitBtn.textContent = "Updating...";
 
 		const currentPassword = currentPwdUpdateInput.value;
 		const newPassword = newPwdUpdateInput.value;
@@ -81,10 +91,10 @@ if (pwdUpdateForm) {
 			return;
 		}
 
-		updatePassword(currentPassword, newPassword, confirmPassword).then(
+		updateUserPassword(currentPassword, newPassword, confirmPassword).then(
 			() => {
 				// reset input values
-				pwdFormSubmitBtn.textContent = 'Save Password'
+				pwdFormSubmitBtn.textContent = "Save Password";
 				resetPasswordInputValues();
 			}
 		);

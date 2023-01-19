@@ -20,6 +20,7 @@ const cookieParser = require("cookie-parser");
 // const cors = require('cors');
 const globalErrorHandler = require("./middleware/globalErrorHandler");
 const connectDB = require("./config/connectDB");
+
 const PORT = process.env.PORT || 3500;
 
 const app = express();

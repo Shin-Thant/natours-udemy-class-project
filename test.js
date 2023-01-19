@@ -1,23 +1,15 @@
-const fun1 = () => {
-	return "hello";
-};
+const arr = [1, 2, 3];
 
-const fun2 = (condition) => {
-	if (condition) {
-		return fun1();
-	}
-
-	console.log("hello world");
-	return fun1();
-};
-
-console.log(fun2(false));
-
-function Test() {
-	this.name = "shin thant";
-	this.age = 20;
-
-	return;
+async function fun() {
+	await Promise.all(
+		arr.map(async (item) => {
+			await new Promise((resolve) => resolve()).then(() =>
+				console.log({ item })
+			);
+		})
+	);
 }
-const user = new Test();
-console.log({ user });
+
+console.log("start");
+fun();
+console.log("end");

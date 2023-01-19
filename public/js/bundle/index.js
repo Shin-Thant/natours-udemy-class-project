@@ -542,6 +542,7 @@ const logoutBtn = document.querySelector(".nav__el--logout");
 const settingForm = document.querySelector(".form-user-data");
 const userNameSettingInput = document.querySelector(".form__input--name-setting");
 const userEmailSettingInput = document.querySelector(".form__input--email-setting");
+const userImageSettingInput = document.querySelector(".form__input--profileImg-setting");
 const pwdUpdateForm = document.querySelector(".form-user-password");
 const currentPwdUpdateInput = document.querySelector(".pwd-update--current");
 const newPwdUpdateInput = document.querySelector(".pwd-update--new");
@@ -565,9 +566,14 @@ if (logoutBtn) logoutBtn.addEventListener("click", ()=>{
 });
 if (settingForm) settingForm.addEventListener("submit", (e)=>{
     e.preventDefault();
+    const formData = new FormData();
     const name = userNameSettingInput.value;
     const email = userEmailSettingInput.value;
-    (0, _updateUserData.updateSettings)(name, email);
+    const image = userImageSettingInput.files;
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("profileImage", image[0]);
+    (0, _updateUserData.updateUserInfo)(formData);
 });
 if (pwdUpdateForm) pwdUpdateForm.addEventListener("submit", (e)=>{
     e.preventDefault();
@@ -579,7 +585,7 @@ if (pwdUpdateForm) pwdUpdateForm.addEventListener("submit", (e)=>{
         (0, _alert.showAlert)("error", "Password and Confirm Password must be the same!");
         return;
     }
-    (0, _updateUserData.updatePassword)(currentPassword, newPassword, confirmPassword).then(()=>{
+    (0, _updateUserData.updateUserPassword)(currentPassword, newPassword, confirmPassword).then(()=>{
         // reset input values
         pwdFormSubmitBtn.textContent = "Save Password";
         resetPasswordInputValues();
@@ -11777,16 +11783,17 @@ const showAlert = (type, msg)=>{
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hFIIY":[function(require,module,exports) {
 /* eslint-disable */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "updateSettings", ()=>updateSettings);
-parcelHelpers.export(exports, "updatePassword", ()=>updatePassword);
+parcelHelpers.export(exports, "updateUserInfo", ()=>updateUserInfo);
+parcelHelpers.export(exports, "updateUserPassword", ()=>updateUserPassword);
 var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
 var _alert = require("./alert");
-const updateSettings = async (name, email)=>{
+const updateUserInfo = async (formData)=>{
     try {
-        const { data  } = await (0, _axiosDefault.default).patch("http://localhost:3500/api/v1/users", {
-            name,
-            email
+        const { data  } = await (0, _axiosDefault.default).patch("http://localhost:3500/api/v1/users", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
         });
         if (data.status !== "success") {
             const errMessage = data.response.data.message;
@@ -11805,7 +11812,7 @@ const updateSettings = async (name, email)=>{
         (0, _alert.showAlert)("error", errMessage1);
     }
 };
-const updatePassword = async (passwordCurrent, password, passwordConfirm)=>{
+const updateUserPassword = async (passwordCurrent, password, passwordConfirm)=>{
     if (!passwordCurrent || !password || !passwordConfirm) {
         (0, _alert.showAlert)("error", "Provide every field to update!!");
         return;

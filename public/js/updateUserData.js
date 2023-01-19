@@ -2,11 +2,12 @@
 import axios from "axios";
 import { showAlert } from "./alert";
 
-export const updateSettings = async (name, email) => {
+export const updateUserInfo = async (formData) => {
 	try {
 		const { data } = await axios.patch(
 			"http://localhost:3500/api/v1/users",
-			{ name, email }
+			formData,
+			{ headers: { "Content-Type": "multipart/form-data" } }
 		);
 
 		if (data.status !== "success") {
@@ -24,7 +25,7 @@ export const updateSettings = async (name, email) => {
 	}
 };
 
-export const updatePassword = async (
+export const updateUserPassword = async (
 	passwordCurrent,
 	password,
 	passwordConfirm

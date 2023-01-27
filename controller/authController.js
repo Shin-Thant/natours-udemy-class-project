@@ -1,7 +1,7 @@
 const User = require("../model/User");
 const AppError = require("../config/AppError");
 const crypto = require("crypto");
-const sendEmail = require("../utils/email");
+const Email = require("../utils/email");
 const createToken = require("../utils/createToken");
 const setCookie = require("../utils/cookiesHandler");
 
@@ -27,6 +27,12 @@ const register = async (req, res) => {
 	}
 
 	const token = await createToken(res, newUser._id);
+
+	const url = `${req.protocol}://${req.get("host")}/me`;
+	console.log({ url });
+	const emailSender = new Email(newUser, url);
+
+	await emailSender.sendWelcome();
 
 	res.status(201).json({
 		status: "success",
@@ -94,18 +100,13 @@ const forgotPassword = async (req, res) => {
 		"host"
 	)}/auth/resetPassword/${resetToken}`;
 
-	const message = `Forgot your password? Submit a PATCH request with with your new password and passwordConfirm to: ${resetUrl}.\nIf you didn't request this, just ignore this email!`;
-
 	try {
-		await sendEmail({
-			email: foundUser.email,
-			subject: "Your password reset token (valid for 10 mins)",
-			message,
-		});
+		const emailSender = new Email(foundUser, resetUrl);
+		await emailSender.sendPasswordReset();
 
 		res.json({ status: "success", message: "Token sent to your email!" });
 	} catch (err) {
-		// console.log({ errMsg: err.message });
+		console.log({ errMsg: err.message });
 
 		foundUser.passwordResetToken = undefined;
 		foundUser.passwordResetExpires = undefined;

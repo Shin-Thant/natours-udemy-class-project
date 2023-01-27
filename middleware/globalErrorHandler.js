@@ -24,6 +24,8 @@ function sendError(err, res) {
 
 // eslint-disable-next-line no-unused-vars
 module.exports = (err, req, res, next) => {
+	console.log({ err });
+
 	// *Mongoose Schema Error
 	if (err.name === "CastError") {
 		return sendError(AppError("Invalid Id!", 400), res);
